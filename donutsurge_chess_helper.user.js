@@ -25,13 +25,16 @@
   'use strict';
 
   if (window.__donutSurgeChessHelperLoaded) return;
-  window.__donutSurgeChessHelperLoaded = true;
 
-  const Stockfish = window.Chess;
-  if (!Stockfish) {
+  // @require dependencies execute in the userscript manager's sandbox, which
+  // may not be the same object as the page's window. Prefer the sandbox global.
+  const Stockfish = typeof Chess !== 'undefined' ? Chess : window.Chess;
+  if (typeof Stockfish !== 'function') {
     console.error('[Chess Helper] chess.js did not load. Check userscript @require access.');
     return;
   }
+  // Set this only after dependencies are verified, so a failed load can retry.
+  window.__donutSurgeChessHelperLoaded = true;
 
   const ENGINE_URL = 'https://cdn.jsdelivr.net/gh/nmrugg/stockfish.js@v19.0.1/src/stockfish-19-asm.js';
   const ID = 'donutsurge-chess-helper';
